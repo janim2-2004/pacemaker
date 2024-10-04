@@ -1,0 +1,26 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Create the main window (root)
+root = tk.Tk()
+root.title("Basic GUI Shell")
+root.geometry("400x300")  # Width x Height
+
+# Function to handle button click
+def on_button_click():
+    messagebox.showinfo("Information", "Button Clicked!")
+
+# Add a label
+label = tk.Label(root, text="Hello, Tkinter!", font=("Arial", 16))
+label.pack(pady=20)
+
+# Add a button
+button = tk.Button(root, text="Click Me", command=on_button_click)
+button.pack(pady=10)
+
+# Add an entry (text box)
+entry = tk.Entry(root, width=30)
+entry.pack(pady=10)
+
+# Start the GUI event loop
+root.mainloop()
