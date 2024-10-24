@@ -56,10 +56,9 @@ def save_users(users):
 # Dictionary to hold user data
 users = load_users()
 
-# Set current language (default to English)
+# default to English
 current_lang = 'EN'
 
-# Function for existing user login
 def existing_user_login():
     login_window = tk.Toplevel(root)
     login_window.title(translations[current_lang]["existing_user"])
@@ -80,15 +79,14 @@ def existing_user_login():
         password = password_entry.get()
         if username in users and users[username] == password:
             messagebox.showinfo("Login", translations[current_lang]["login_success"])
-            login_window.destroy()  # Close the login window
-            user_home(username)  # Show the new screen with 4 buttons
+            login_window.destroy()
+            user_home(username)
         else:
             messagebox.showerror("Login", translations[current_lang]["login_failed"])
 
     login_button = tk.Button(login_window, text=translations[current_lang]["login"], command=login)
     login_button.pack(pady=10)
 
-# Function for new user registration
 def new_user_registration():
     if len(users) >= 10:
         messagebox.showerror("Registration Error", "max users reached")
@@ -117,7 +115,7 @@ def new_user_registration():
             users[username] = password  # Add the new user
             save_users(users)  # Save the users to a file
             messagebox.showinfo("Registration", translations[current_lang]["register_success"])
-            register_window.destroy()  # Close the registration window
+            register_window.destroy()
 
     register_button = tk.Button(register_window, text=translations[current_lang]["register"], command=register)
     register_button.pack(pady=10)
@@ -131,7 +129,6 @@ def user_home(username):
     connection_status = tk.Label(root, text="Connection Status: Not Connected", fg="red")
     connection_status.place(relx=1.0, rely=0.0, anchor="ne")  # Place at top-right corner
 
-    # Function to update connection status (you can later use this when connection changes)
     def update_connection_status(status):
         connection_status.config(text=f"Connection Status: {status}")
         if status == "Connected":
@@ -150,7 +147,6 @@ def user_home(username):
         mode_button.pack_forget()
         sign_out_button.pack_forget()
 
-
     # Button to access programmable parameters
     param_button = tk.Button(root, text="Programmable Parameters", command=lambda: show_programmable_parameters(username))
     param_button.pack(pady=30)
@@ -162,37 +158,31 @@ def user_home(username):
     sign_out_button = tk.Button(root, text="Sign Out", command=sign_out)
     sign_out_button.pack(pady=30)
 
-
-# Function to change pacemaker operation mode
 def change_operation_mode(username):
-    # Create a new window for operation mode selection
     mode_window = tk.Toplevel(root)
     mode_window.title("Change Operation Mode")
     mode_window.geometry("400x300")
 
-    # Function to handle mode change and display message
     def set_mode(mode_name):
         messagebox.showinfo("Mode Change", f"Device is now in {mode_name} mode")
 
-    # Create 4 buttons for different operation modes
-    mode1_button = tk.Button(mode_window, text="VOO", command=lambda: set_mode("VOO"))
-    mode1_button.pack(pady=20)
+    VOO_button = tk.Button(mode_window, text="VOO", command=lambda: set_mode("VOO"))
+    VOO_button.pack(pady=20)
 
-    mode2_button = tk.Button(mode_window, text="VVI", command=lambda: set_mode("VVI"))
-    mode2_button.pack(pady=20)
+    VVI_button = tk.Button(mode_window, text="VVI", command=lambda: set_mode("VVI"))
+    VVI_button.pack(pady=20)
 
-    mode3_button = tk.Button(mode_window, text="AOO", command=lambda: set_mode("AOO"))
-    mode3_button.pack(pady=20)
+    AOO_button = tk.Button(mode_window, text="AOO", command=lambda: set_mode("AOO"))
+    AOO_button.pack(pady=20)
 
-    mode4_button = tk.Button(mode_window, text="AAI", command=lambda: set_mode("AAI"))
-    mode4_button.pack(pady=20)
+    AII_button = tk.Button(mode_window, text="AAI", command=lambda: set_mode("AAI"))
+    AII_button.pack(pady=20)
 
 def save_user_pacemaker_params(username, params):
     user_data_path = os.path.join('data', f"{username}_pacemaker_params.json")
     with open(user_data_path, 'w') as f:
         json.dump(params, f)
 
-# Function to load pacemaker parameters for a user
 def load_user_pacemaker_params(username):
     user_data_path = os.path.join('data', f"{username}_pacemaker_params.json")
     if os.path.exists(user_data_path):
@@ -218,7 +208,7 @@ def show_programmable_parameters(username):
     param_labels = {}
     param_entries = {}
 
-    # Dynamically create labels for each parameter (read-only initially)
+    # Dynamically create labels for each parameter
     for param_name, param_value in params.items():
         param_label = tk.Label(param_frame, text=f"{param_name}: {param_value}")
         param_label.pack(pady=5)
@@ -227,14 +217,14 @@ def show_programmable_parameters(username):
     # Function to switch to "edit" mode and replace labels with Entry widgets
     def modify_parameters():
         for param_name, param_label in param_labels.items():
-            param_label.pack_forget()  # Remove the label
+            param_label.pack_forget() 
             param_entry = tk.Entry(param_frame, width=30)
             param_entry.pack(pady=5)
-            param_entry.insert(0, params[param_name])  # Insert current value into the entry
+            param_entry.insert(0, params[param_name]) 
             param_entries[param_name] = param_entry  # Save entry in a dictionary for later access
 
-        modify_button.pack_forget()  # Hide the modify button
-        save_button.pack(pady=20)  # Show the save button
+        modify_button.pack_forget()  
+        save_button.pack(pady=20) 
 
     # Function to save modified parameters
     def save_parameters():
@@ -243,11 +233,9 @@ def show_programmable_parameters(username):
         messagebox.showinfo("Success", "Parameters saved successfully!")
         param_window.destroy()  # Close window after saving
 
-    # Button to modify parameters (switch to entry mode)
     modify_button = tk.Button(param_window, text="Modify Parameters", command=modify_parameters)
     modify_button.pack(pady=10)
 
-    # Save button (hidden initially, only shown after modifying parameters)
     save_button = tk.Button(param_window, text="Save Parameters", command=save_parameters)
     save_button.pack_forget()  # Initially hidden
 
@@ -255,9 +243,8 @@ def show_programmable_parameters(username):
 # Initialize the main window
 root = tk.Tk()
 root.title("Pacemaker UI")
-root.geometry("400x400")
+root.geometry("400x400") #WxH
 
-# Add two buttons: one for existing user login, and one for new user registration
 login_button = tk.Button(root, text="Existing User Login", command=existing_user_login)
 login_button.pack(pady=50)
 
