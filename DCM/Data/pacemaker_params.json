@@ -1,0 +1,22 @@
+{
+    "man": {
+        "Lower Rate Limit": "60 BPM",
+        "Upper Rate Limit": "120 BPM",
+        "Atrial Amplitude": "70 %",
+        "Atrial Pules Width": "10 ms",
+        "Ventricle Amplitude": "70 %",
+        "Ventricle Pules Width": "10 ms",
+        "VRP": "250ms",
+        "ARP": "250ms"
+    },
+    "": {
+        "Lower Rate Limit": "60 BPM",
+        "Upper Rate Limit": "120 BPM",
+        "Atrial Amplitude": "70 %",
+        "Atrial Pules Width": "10 ms",
+        "Ventricle Amplitude": "70 %",
+        "Ventricle Pules Width": "10 ms",
+        "VRP": "250ms",
+        "ARP": "250ms"
+    }
+}
