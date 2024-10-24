@@ -2,7 +2,8 @@
 
 PYTHON=python3  
 SCRIPT=./Code/PacemakerUI.py 
-CACHE_DIR=./Languages
+LANG_DIR=./Languages
+CODE_DIR=./Code
 
 run:
 	$(PYTHON) $(SCRIPT)
@@ -10,6 +11,7 @@ run:
 clean:
 	rm -f *.pyc
 	rm -rf __pycache__
-	cd $(CACHE_DIR) && rm -f *.pyc && rm -rf __pycache__
+	cd $(CODE_DIR) && rm -f *.pyc && rm -rf __pycache__\
+	cd $(LANG_DIR) && rm -f *.pyc && rm -rf __pycache__
 
 .PHONY: run clean

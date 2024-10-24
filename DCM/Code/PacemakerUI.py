@@ -239,7 +239,6 @@ def show_programmable_parameters(username):
     save_button = tk.Button(param_window, text="Save Parameters", command=save_parameters)
     save_button.pack_forget()  # Initially hidden
 
-
 # Initialize the main window
 root = tk.Tk()
 root.title("Pacemaker UI")
