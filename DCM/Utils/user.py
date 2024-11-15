@@ -1,7 +1,13 @@
+########################################################################################################################
+#
+#                              User class for backend processing of user data and credentials
+#
+########################################################################################################################
+
 import json
 import tkinter as tk
-
-MAX_USERS = 10
+from tkinter import messagebox
+from Utils.login import UserManager
 
 #shell type for future implementation of egram charts
 egram_data = {
@@ -17,47 +23,57 @@ egram_data = {
     ]
 }
 
+DEFAULT_PARAMETERS = {
+    "Lower Rate Limit": "60 BPM",
+    "Upper Rate Limit": "120 BPM",
+    "Atrial Amplitude": "3.5V",
+    "Atrial Pulse Width": "10 ms",
+    "Ventricle Amplitude": "3.5V",
+    "Ventricle Pulse Width": "10 ms",
+    "VRP": "250 ms",
+    "ARP": "250 ms"
+}
 
-def authenticate_user(username, password):
-    with open("data/users.json", "r") as f:
-        users = json.load(f)
-    return users.get(username) == password
+def get_users():
+    try:
+        with open('Data/users.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        messagebox.showerror("Error", "Filepath Error")
+        return 0
+    
+class User:
+    def __init__(self, username):
+        users = get_users()
+        for user in users:
+            if user['username'] == username :
+                self.user = user
 
-def register_new_user(root):
-    # Load existing users
-    with open("data/users.json", "r") as f:
-        users = json.load(f)
-
-    # Check if user limit is reached
-    if len(users) >= MAX_USERS:
-        tk.Label(root, text="Max users reached. Cannot register new users.", fg="red").pack()
-        return
-
-    # Create a new window for user registration
-    register_window = tk.Toplevel(root)
-    register_window.title("Register New User")
-    register_window.geometry("300x200")
-
-    tk.Label(register_window, text="Enter New Username:").pack(pady=5)
-    username_entry = tk.Entry(register_window)
-    username_entry.pack(pady=5)
-
-    tk.Label(register_window, text="Enter New Password:").pack(pady=5)
-    password_entry = tk.Entry(register_window, show="*")
-    password_entry.pack(pady=5)
-
-    def save_new_user():
-        username = username_entry.get()
-        password = password_entry.get()
-
-        if username in users:
-            tk.Label(register_window, text="Username already exists.", fg="red").pack()
+    def get_user(self):
+        if(self.user):
+            return self.user
         else:
-            # Register the new user with default parameters
-            users[username] = password
-            with open("data/users.json", "w") as f:
-                json.dump(users, f)
-            tk.Label(register_window, text="User registered successfully!", fg="green").pack()
-            register_window.after(1500, register_window.destroy)
+            messagebox.showerror("Error", "User not initiated")
+            return 0
+        
+    def get_role(self):
+        return self.user['role']
 
-    tk.Button(register_window, text="Register", command=save_new_user).pack(pady=10)
+    def get_username(self):
+        return self.user['username']
+    
+    def get_user_parameters(self):
+        try:
+            with open(f"data/{self.user['username']}_parameters.json", "r") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            messagebox.showwarning("Warning", "Patient parameters not initiated, using defualt parameters")
+            return DEFAULT_PARAMETERS
+        
+    def save_user_parameters(self, parameters):
+        with open(f"data/{self.user['username']}_parameters.json", "w") as f:
+            json.dump(parameters, f)
+
+    def authenticate_admin(self):
+        return (self.user['role'] == "Practitioner")
+    

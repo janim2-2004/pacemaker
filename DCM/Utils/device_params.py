@@ -2,24 +2,6 @@ import json
 from datetime import datetime
 import tkinter as tk
 
-DEFAULT_PARAMETERS = {
-    "Lower Rate Limit": "60 BPM",
-    "Upper Rate Limit": "120 BPM",
-    "Atrial Amplitude": "3.5V",
-    "Atrial Pulse Width": "10 ms",
-    "Ventricle Amplitude": "3.5V",
-    "Ventricle Pulse Width": "10 ms",
-    "VRP": "250 ms",
-    "ARP": "250 ms"
-}
-
-def get_programmable_parameters(username):
-    try:
-        with open(f"data/{username}_parameters.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return DEFAULT_PARAMETERS
-
 def save_programmable_parameters(username, parameters):
     with open(f"data/{username}_parameters.json", "w") as f:
         json.dump(parameters, f)
@@ -31,6 +13,15 @@ def apply_clock(date_str, time_str, clock_window):
         tk.Label(clock_window, text="Clock updated successfully!", fg="green").pack(pady=5)
     except ValueError:
         tk.Label(clock_window, text="Invalid date or time format.", fg="red").pack(pady=5)
+
+
+def change_operation_mode(home_window, user):
+    mode_window = tk.Toplevel(home_window)
+    mode_window.title("Operation Mode")
+    mode_window.geometry("300x200")
+
+    user.get_opperation_mode()
+
 
 def change_operation_mode(home_window):
     mode_window = tk.Toplevel(home_window)
