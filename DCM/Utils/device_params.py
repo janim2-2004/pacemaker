@@ -1,6 +1,8 @@
 import json
 from datetime import datetime
 import tkinter as tk
+import serial 
+
 
 def save_programmable_parameters(username, parameters):
     with open(f"data/{username}_parameters.json", "w") as f:
