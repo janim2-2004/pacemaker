@@ -115,8 +115,8 @@ class COM:
         return parameters
 
     def startEgram(self):
-        self.ser.write(b"\x16\63")
-        sleep(0.25)
+        self.ser.write(b"\x16\63") # edit
+        sleep(0.25) 
 
         data_r = self.ser.read(50)
 
