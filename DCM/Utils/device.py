@@ -245,9 +245,9 @@ class Mode:
 
         invalid = False
 
-        if (self.lowerRateLimit.get() < 30) or (self.lowerRateLimit.get() > 175):
+        if (self.lowerRateLimit.get() < 30) or (self.lowerRateLimit.get() > 90):
             invalid = True
-            messagebox.showerror("Value Error", "Lower Rate Limit must be between 30-175")
+            messagebox.showerror("Value Error", "Lower Rate Limit must be between 30-90")
         if (self.upperRateLimit.get() < 50) or (self.upperRateLimit.get() > 175):
             invalid = True
             messagebox.showerror("Value Error", "Upper Rate Limit must be between 50-175")
