@@ -31,15 +31,13 @@ class Mode:
         self.tab4 = ttk.Frame(self.tabControl)
         self.tab5 = ttk.Frame(self.tabControl)
         self.tab6 = ttk.Frame(self.tabControl)
-        self.tab7 = ttk.Frame(self.tabControl)
 
         self.tabControl.add(self.tab1, text="\n"+f'{"AOO":^20s}'+"\n")
         self.tabControl.add(self.tab2, text="\n"+f'{"VOO":^20s}'+"\n")
         self.tabControl.add(self.tab3, text="\n"+f'{"AAI":^22s}'+"\n")
         self.tabControl.add(self.tab4, text="\n"+f'{"VVI":^22s}'+"\n")
-        self.tabControl.add(self.tab5, text="\n"+f'{"DOO":^22s}'+"\n")
-        self.tabControl.add(self.tab6, text="\n"+f'{"COM Settings":^22s}'+"\n")
-        self.tabControl.add(self.tab7, text="\n"+f'{"EGRAM":^22s}'+"\n")
+        self.tabControl.add(self.tab5, text="\n"+f'{"COM Settings":^22s}'+"\n")
+        self.tabControl.add(self.tab6, text="\n"+f'{"EGRAM":^22s}'+"\n")
         self.tabControl.pack(expand=1, fill=BOTH)
         
         # Initialize list of inputs to be passed through to pacemaker
@@ -50,48 +48,45 @@ class Mode:
         self.inputValues.pop(0) # Remove first item in list because not a valid parameter, just the rowid from database
 
         # Pacemaker Parameter Initialization
-        # [Mode, LRL, URL, A.amp, A.pw, V.amp, V.pw, VRP, ARP, rateAdapt (boolean), MSR, actThres, reactTime, resFactor, recTime]
+        # [mode, LRL, URL, PVARP, AVdelay, reactTime, resFactor, actThresh, recTime, MSR, A_Amp, A_pw, ARP, aThres, V_Amp, V_pw, VRP, vThres]
 
         self.lowerRateLimit = IntVar()
         IntVar.set(self.lowerRateLimit, self.inputValues[1])
         self.upperRateLimit = IntVar()
         IntVar.set(self.upperRateLimit, self.inputValues[2])
-        self.atrialAmp = DoubleVar()
-        DoubleVar.set(self.atrialAmp, self.inputValues[3])
-        self.atrialPulseWidth = IntVar()
-        IntVar.set(self.atrialPulseWidth, self.inputValues[4])
-        self.ventriAmp = DoubleVar()
-        DoubleVar.set(self.ventriAmp, self.inputValues[5])
-        self.ventriPulseWidth = IntVar()
-        IntVar.set(self.ventriPulseWidth, self.inputValues[6])
-        self.vrp = IntVar()
-        IntVar.set(self.vrp, self.inputValues[7])
-        self.arp = IntVar()
-        IntVar.set(self.arp, self.inputValues[8])
         self.pvarp = IntVar()
-        IntVar.set(self.pvarp, 250)
-        self.atrialSens = DoubleVar()
-        DoubleVar.set(self.atrialSens, self.inputValues[9])
-        self.ventriSens = DoubleVar()
-        DoubleVar.set(self.ventriSens, self.inputValues[10])
-        self.hysteresis = StringVar()
-        self.hysteresis.set("Off")
-        self.rateSmoothing = StringVar()
-        self.rateSmoothing.set("Off")
-        self.rateAdapt = IntVar()
-        IntVar.set(self.rateAdapt, self.inputValues[11])
-        self.msr = IntVar()
-        IntVar.set(self.msr, self.inputValues[12])
-        self.actThres = DoubleVar()
-        DoubleVar.set(self.actThres, self.inputValues[13])
-        self.reactTime = IntVar()
-        IntVar.set(self.reactTime, self.inputValues[14])
-        self.resFactor = IntVar()
-        IntVar.set(self.resFactor, self.inputValues[15])
-        self.recTime = IntVar()
-        IntVar.set(self.recTime, self.inputValues[16])
+        IntVar.set(self.pvarp, self.inputValues[3])
         self.avDelay = IntVar()
-        IntVar.set(self.avDelay, self.inputValues[17])
+        IntVar.set(self.avDelay, self.inputValues[4])
+        self.reactTime = IntVar()
+        IntVar.set(self.reactTime, self.inputValues[5])
+        self.resFactor = IntVar()
+        IntVar.set(self.resFactor, self.inputValues[6])
+        self.actThres = DoubleVar()
+        DoubleVar.set(self.actThres, self.inputValues[7])
+        self.recTime = IntVar()
+        IntVar.set(self.recTime, self.inputValues[8])
+        self.msr = IntVar()
+        IntVar.set(self.msr, self.inputValues[9])
+        
+        self.atrialAmp = DoubleVar()
+        DoubleVar.set(self.atrialAmp, self.inputValues[10])
+        self.atrialPulseWidth = DoubleVar()
+        IntVar.set(self.atrialPulseWidth, self.inputValues[11])
+        self.arp = IntVar()
+        IntVar.set(self.arp, self.inputValues[12])
+        self.atrialThres = DoubleVar()
+        DoubleVar.set(self.atrialThres, self.inputValues[13])
+
+        self.ventriAmp = DoubleVar()
+        DoubleVar.set(self.ventriAmp, self.inputValues[14])
+        self.ventriPulseWidth = DoubleVar()
+        IntVar.set(self.ventriPulseWidth, self.inputValues[15])
+        self.vrp = IntVar()
+        IntVar.set(self.vrp, self.inputValues[16])
+        self.ventriThres = DoubleVar()
+        DoubleVar.set(self.ventriThres, self.inputValues[17])
+        
 
         self.tabControl.select(self.inputValues[0]) # Default view to saved active mode
 
@@ -120,7 +115,7 @@ class Mode:
         # using a dictionary
         # Returns a corresponding method to the current tab selection
 
-        tabs = {0:"aooInterface", 1:"vooInterface", 2:"aaiInterface", 3:"vviInterface", 4:"dooInterface", 5:"commSettings", 6:"egram"}
+        tabs = {0:"aooInterface", 1:"vooInterface", 2:"aaiInterface", 3:"vviInterface", 4:"commSettings", 5:"egram"}
         currentTab = self.tabControl.index("current")
         method=getattr(self, tabs.get(currentTab))
         
@@ -130,7 +125,6 @@ class Mode:
             self.__vooConfigConfirm()
             self.__aaiConfigConfirm()
             self.__vviConfigConfirm()
-            self.__dooConfigConfirm()
             self.__commSettingsCleanup()
             self.__egramCleanup()
         except AttributeError:
@@ -169,8 +163,9 @@ class Mode:
         atrialPulseValue = ttk.Label(self.tab1, text=self.atrialPulseWidth.get()).grid(column=2, row=4, padx=20, pady=20)
         atrialPulseUnit = ttk.Label(self.tab1, text="ms").grid(column=3, row=4, padx=20, pady=20, sticky="w")
 
-        rateAdaptLabel = ttk.Label(self.tab1, text="Rate Adaptivity:").grid(column=1, row=5, padx=20, pady=20, sticky="e")
-        rateAdaptValue = ttk.Label(self.tab1, text="On" if self.rateAdapt.get()==1 else "Off").grid(column=2, row=5, padx=20, pady=20)
+        # pvarpLabel = ttk.Label(self.tab1, text="PVARP:").grid(column=1, row=5, padx=20, pady=20, sticky="e")
+        # pvarpValue = ttk.Label(self.tab1, text=self.pvarp.get()).grid(column=2, row=5, padx=20, pady=20)
+        # pvarpUnit = ttk.Label(self.tab1, text="ms").grid(column=3, row=5, padx=20, pady=20, sticky="w")
 
         msrLabel = ttk.Label(self.tab1, text="Max. Sensor Rate:").grid(column=1, row=6, padx=20, pady=20, sticky="e")
         msrValue = ttk.Label(self.tab1, text=self.msr.get()).grid(column=2, row=6, padx=20, pady=20)
@@ -212,8 +207,9 @@ class Mode:
         self.atrialPulseInput.grid(column=2, row=4, padx=20, pady=20)
         self.atrialPulseInput.config(validate="key", validatecommand=(reg, "%P"))
 
-        self.rateAdaptInput = ttk.Checkbutton(self.tab1, var=self.rateAdapt, onvalue=1, offvalue=0)
-        self.rateAdaptInput.grid(column=2, row=5, padx=20, pady=20)
+        # self.pvarpInput = ttk.Entry(self.tab1, textvariable=self.pvarp, justify=CENTER)
+        # self.pvarpInput.grid(column=2, row=5, padx=20, pady=20)
+        # self.pvarpInput.config(validate="key", validatecommand=(reg, "%P"))
 
         self.msrInput = ttk.Entry(self.tab1, textvariable=self.msr, justify=CENTER)
         self.msrInput.grid(column=2, row=6, padx=20, pady=20)
@@ -236,7 +232,7 @@ class Mode:
         self.recTimeInput.set(self.recTime.get())
 
         self.confirmButton1 = tk.Button(self.tab1, text="Confirm Changes", bg="white", command=self.__aooConfigConfirm)
-        self.confirmButton1.grid(column=5, row=10, sticky="w", padx=5, pady=5)
+        self.confirmButton1.grid(column=5, row=11, sticky="w", padx=10, pady=10)
 
     def __aooConfigConfirm(self):
         # AOO config confirm button -> Enforces value limits, cleans up ui to prevent memory leaking, and updates values
@@ -304,8 +300,9 @@ class Mode:
         ventriPulseValue = ttk.Label(self.tab2, text=self.ventriPulseWidth.get()).grid(column=2, row=4, padx=20, pady=20)
         ventriPulseUnit = ttk.Label(self.tab2, text="ms").grid(column=3, row=4, padx=20, pady=20, sticky="w")
 
-        rateAdaptLabel = ttk.Label(self.tab2, text="Rate Adaptivity:").grid(column=1, row=5, padx=20, pady=20, sticky="e")
-        rateAdaptValue = ttk.Label(self.tab2, text="On" if self.rateAdapt.get()==1 else "Off").grid(column=2, row=5, padx=20, pady=20)
+        # pvarpLabel = ttk.Label(self.tab2, text="PVARP:").grid(column=1, row=5, padx=20, pady=20, sticky="e")
+        # pvarpValue = ttk.Label(self.tab2, text=self.pvarp.get()).grid(column=2, row=5, padx=20, pady=20)
+        # pvarpUnit = ttk.Label(self.tab2, text="ms").grid(column=3, row=5, padx=20, pady=20, sticky="w")
 
         msrLabel = ttk.Label(self.tab2, text="Max. Sensor Rate:").grid(column=1, row=6, padx=20, pady=20, sticky="e")
         msrValue = ttk.Label(self.tab2, text=self.msr.get()).grid(column=2, row=6, padx=20, pady=20)
@@ -347,8 +344,9 @@ class Mode:
         self.ventriPulseInput2.grid(column=2, row=4, padx=20, pady=20)
         self.ventriPulseInput2.config(validate="key", validatecommand="%P")
 
-        self.rateAdaptInput2 = ttk.Checkbutton(self.tab2, var=self.rateAdapt, onvalue=1, offvalue=0)
-        self.rateAdaptInput2.grid(column=2, row=5, padx=20, pady=20)
+        # self.pvarpInput2 = ttk.Entry(self.tab2, textvariable=self.pvarp, justify=CENTER)
+        # self.pvarpInput2.grid(column=2, row=5, padx=20, pady=20)
+        # self.pvarpInput2.config(validate="key", validatecommand=(reg, "%P"))
 
         self.msrInput2 = ttk.Entry(self.tab2, textvariable=self.msr, justify=CENTER)
         self.msrInput2.grid(column=2, row=6, padx=20, pady=20)
@@ -440,7 +438,7 @@ class Mode:
         atrialPulseUnit = ttk.Label(self.tab3, text="ms").grid(column=3, row=4, padx=20, pady=10, sticky="w")
 
         atrialSensLabel = ttk.Label(self.tab3, text="Atrial Sensitivity:").grid(column=1, row=5, padx=20, pady=10, sticky="e")
-        atrialSensValue = ttk.Label(self.tab3, text=self.atrialSens.get()).grid(column=2, row=5, padx=20, pady=10)
+        atrialSensValue = ttk.Label(self.tab3, text=self.atrialThres.get()).grid(column=2, row=5, padx=20, pady=10)
         atrialSensUnit = ttk.Label(self.tab3, text="V").grid(column=3, row=5, padx=20, pady=10, sticky="w")
 
         arpLabel = ttk.Label(self.tab3, text="ARP:").grid(column=1, row=6, padx=20, pady=10, sticky="e")
@@ -451,33 +449,26 @@ class Mode:
         pvarpValue = ttk.Label(self.tab3, text=self.pvarp.get()).grid(column=2, row=7, padx=20, pady=10)
         pvarpUnit = ttk.Label(self.tab3, text="ms").grid(column=3, row=7, padx=20, pady=10, sticky="w")
 
-        hysteresisLabel = ttk.Label(self.tab3, text="Hysteresis:").grid(column=1, row=8, padx=20, pady=10, sticky="e")
-        self.hysteresisValue = ttk.Label(self.tab3, text=self.hysteresis.get())
-        self.hysteresisValue.grid(column=2, row=8, padx=20, pady=10)
-        
-        rateSmoothLabel = ttk.Label(self.tab3, text="Rate Smoothing:").grid(column=1, row=9, padx=20, pady=10, sticky="e")
-        self.rateSmoothValue = ttk.Label(self.tab3, text=self.rateSmoothing.get())
-        self.rateSmoothValue.grid(column=2, row=9, padx=20, pady=10)
+        pvarpLabel = ttk.Label(self.tab1, text="PVARP:").grid(column=1, row=8, padx=20, pady=10, sticky="e")
+        pvarpValue = ttk.Label(self.tab1, text=self.pvarp.get()).grid(column=2, row=5, padx=10, pady=20)
+        pvarpUnit = ttk.Label(self.tab1, text="ms").grid(column=3, row=5, padx=20, pady=10, sticky="w")
 
-        rateAdaptLabel = ttk.Label(self.tab3, text="Rate Adaptivity:").grid(column=1, row=10, padx=20, pady=10, sticky="e")
-        rateAdaptValue = ttk.Label(self.tab3, text="On" if self.rateAdapt.get()==1 else "Off").grid(column=2, row=10, padx=20, pady=10)
+        msrLabel = ttk.Label(self.tab3, text="Max. Sensor Rate:").grid(column=1, row=9, padx=20, pady=10, sticky="e")
+        msrValue = ttk.Label(self.tab3, text=self.msr.get()).grid(column=2, row=9, padx=20, pady=10)
+        msrUnit = ttk.Label(self.tab3, text="ppm").grid(column=3, row=9, padx=20, pady=10, sticky="w")
 
-        msrLabel = ttk.Label(self.tab3, text="Max. Sensor Rate:").grid(column=1, row=11, padx=20, pady=10, sticky="e")
-        msrValue = ttk.Label(self.tab3, text=self.msr.get()).grid(column=2, row=11, padx=20, pady=10)
-        msrUnit = ttk.Label(self.tab3, text="ppm").grid(column=3, row=11, padx=20, pady=10, sticky="w")
+        actThresLabel = ttk.Label(self.tab3, text="Activity Threshold:").grid(column=1, row=10, padx=20, pady=10, sticky="e")
+        actThresValue = ttk.Label(self.tab3, text=self.actThresTextValues[self.actThres.get()]).grid(column=2, row=10, padx=20, pady=10)
 
-        actThresLabel = ttk.Label(self.tab3, text="Activity Threshold:").grid(column=1, row=12, padx=20, pady=10, sticky="e")
-        actThresValue = ttk.Label(self.tab3, text=self.actThresTextValues[self.actThres.get()]).grid(column=2, row=12, padx=20, pady=10)
+        reactTimeLabel = ttk.Label(self.tab3, text="Reaction Time:").grid(column=1, row=11, padx=20, pady=10, sticky="e")
+        reactTimeValue = ttk.Label(self.tab3, text=self.reactTime.get()).grid(column=2, row=11, padx=20, pady=10)
+        reactTimeUnit = ttk.Label(self.tab3, text="sec").grid(column=3, row=11, padx=20, pady=10, sticky="w")
 
-        reactTimeLabel = ttk.Label(self.tab3, text="Reaction Time:").grid(column=1, row=13, padx=20, pady=10, sticky="e")
-        reactTimeValue = ttk.Label(self.tab3, text=self.reactTime.get()).grid(column=2, row=13, padx=20, pady=10)
-        reactTimeUnit = ttk.Label(self.tab3, text="sec").grid(column=3, row=13, padx=20, pady=10, sticky="w")
+        resFactorLabel = ttk.Label(self.tab3, text="Response Factor:").grid(column=1, row=12, padx=20, pady=10, sticky="e")
+        resFactorValue = ttk.Label(self.tab3, text=self.resFactor.get()).grid(column=2, row=12, padx=20, pady=10)
 
-        resFactorLabel = ttk.Label(self.tab3, text="Response Factor:").grid(column=1, row=14, padx=20, pady=10, sticky="e")
-        resFactorValue = ttk.Label(self.tab3, text=self.resFactor.get()).grid(column=2, row=14, padx=20, pady=10)
-
-        recTimeLabel = ttk.Label(self.tab3, text="Recovery Time:").grid(column=1, row=15, padx=20, pady=10, sticky="e")
-        recTimeValue = ttk.Label(self.tab3, text=self.recTime.get()).grid(column=2, row=15, padx=20, pady=10)
+        recTimeLabel = ttk.Label(self.tab3, text="Recovery Time:").grid(column=1, row=13, padx=20, pady=10, sticky="e")
+        recTimeValue = ttk.Label(self.tab3, text=self.recTime.get()).grid(column=2, row=13, padx=20, pady=10)
         recTimeUnit = ttk.Label(self.tab3, text="min").grid(column=3, row=15, padx=20, pady=10, sticky="w")
     
     def __aaiInterfaceConfig(self):
@@ -516,37 +507,32 @@ class Mode:
         self.pvarpInput3.grid(column=2, row=7, padx=20, pady=10)
         self.pvarpInput3.config(validate="key", validatecommand=(reg, "%P"))
 
-        self.hysteresisInput3 = ttk.Checkbutton(self.tab3, var=self.hysteresis, onvalue="On", offvalue="Off")
-        self.hysteresisInput3.grid(column=2, row=8, padx=20, pady=10)
-
-        self.rateSmoothInput3 = ttk.Checkbutton(self.tab3, var=self.rateSmoothing, onvalue="On", offvalue="Off")
-        self.rateSmoothInput3.grid(column=2, row=9, padx=20, pady=10)
-
-        self.rateAdaptInput3 = ttk.Checkbutton(self.tab3, var=self.rateAdapt, onvalue=1, offvalue=0)
-        self.rateAdaptInput3.grid(column=2, row=10, padx=20, pady=10)
+        self.pvarpInput3 = ttk.Entry(self.tab3, textvariable=self.pvarp, justify=CENTER)
+        self.pvarpInput3.grid(column=2, row=8, padx=20, pady=20)
+        self.pvarpInput3.config(validate="key", validatecommand=(reg, "%P"))
 
         self.msrInput3 = ttk.Entry(self.tab3, textvariable=self.msr, justify=CENTER)
-        self.msrInput3.grid(column=2, row=11, padx=20, pady=10)
+        self.msrInput3.grid(column=2, row=9, padx=20, pady=10)
         self.msrInput3.config(validate="key", validatecommand=(reg, "%P"))
         
         self.actThresInput3 = ttk.Combobox(self.tab3, values=list(self.actThresTextValues.values()))
-        self.actThresInput3.grid(column=2, row=12, padx=20, pady=10)
+        self.actThresInput3.grid(column=2, row=10, padx=20, pady=10)
         self.actThresInput3.set(self.actThresTextValues[self.actThres.get()])
 
         self.reactTimeInput3 = ttk.Combobox(self.tab3, values=[10,20,30,40,50])
-        self.reactTimeInput3.grid(column=2, row=13, padx=20, pady=10)
+        self.reactTimeInput3.grid(column=2, row=11, padx=20, pady=10)
         self.reactTimeInput3.set(self.reactTime.get())
 
         self.resFactorInput3 = ttk.Combobox(self.tab3, values=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        self.resFactorInput3.grid(column=2, row=14, padx=20, pady=10)
+        self.resFactorInput3.grid(column=2, row=12, padx=20, pady=10)
         self.resFactorInput3.set(self.resFactor.get())
 
         self.recTimeInput3 = ttk.Combobox(self.tab3, values=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        self.recTimeInput3.grid(column=2, row=15, padx=20, pady=10)
+        self.recTimeInput3.grid(column=2, row=13, padx=20, pady=10)
         self.recTimeInput3.set(self.recTime.get())
 
         self.confirmButton3 = tk.Button(self.tab3, text="Confirm Changes", bg="white", command=self.__aaiConfigConfirm)
-        self.confirmButton3.grid(column=5, row=15, sticky="w", padx=5, pady=5)
+        self.confirmButton3.grid(column=5, row=14, sticky="w", padx=5, pady=5)
 
     def __aaiConfigConfirm(self):
         # AAI config confirm button -> Enforces value limits, cleans up ui to prevent memory leaking, and updates values
@@ -568,7 +554,7 @@ class Mode:
         if (self.arp.get() < 150) or (self.arp.get() > 500):
             invalid = True
             messagebox.showerror("Value Error", "ARP must be between 150 and 500")
-        if (self.atrialSens.get() < 0) or (self.atrialSens.get() > 5.0):
+        if (self.atrialSens.get() < 0) or (self.atrialThres.get() > 5.0):
             invalid = True
             messagebox.showerror("Value Error", "Atrial Sensitivity must be between 0 and 5.0")
         if (self.msr.get() < 50) or (self.msr.get() > 175):
@@ -620,42 +606,35 @@ class Mode:
         ventriPulseValue = ttk.Label(self.tab4, text=self.ventriPulseWidth.get()).grid(column=2, row=4, padx=20, pady=10)
         ventriPulseUnit = ttk.Label(self.tab4, text="ms").grid(column=3, row=4, padx=20, pady=10, sticky="w")
 
-        ventriSensLabel = ttk.Label(self.tab4, text="Ventri. Sensitivity:").grid(column=1, row=5, padx=20, pady=10, sticky="e")
-        ventriSensValue = ttk.Label(self.tab4, text=self.ventriSens.get()).grid(column=2, row=5, padx=20, pady=10)
+        ventriSensLabel = ttk.Label(self.tab4, text="Ventri. Threshold:").grid(column=1, row=5, padx=20, pady=10, sticky="e")
+        ventriSensValue = ttk.Label(self.tab4, text=self.ventriThres.get()).grid(column=2, row=5, padx=20, pady=10)
         ventriSensUnit = ttk.Label(self.tab4, text="V").grid(column=3, row=5, padx=20, pady=10, sticky="w")
 
         vrpLabel = ttk.Label(self.tab4, text="VRP:").grid(column=1, row=6, padx=20, pady=10, sticky="e")
         vrpValue = ttk.Label(self.tab4, text=self.vrp.get()).grid(column=2, row=6, padx=20, pady=10)
         vrpUnit = ttk.Label(self.tab4, text="ms").grid(column=3, row=6, padx=20, pady=10, sticky="w")
 
-        hysteresisLabel = ttk.Label(self.tab4, text="Hysteresis:").grid(column=1, row=7, padx=20, pady=10, sticky="e")
-        self.hysteresisValue2 = ttk.Label(self.tab4, text=self.hysteresis.get())
-        self.hysteresisValue2.grid(column=2, row=7, padx=20, pady=10)
-        
-        rateSmoothLabel = ttk.Label(self.tab4, text="Rate Smoothing:").grid(column=1, row=8, padx=20, pady=10, sticky="e")
-        self.rateSmoothValue2 = ttk.Label(self.tab4, text=self.rateSmoothing.get())
-        self.rateSmoothValue2.grid(column=2, row=8, padx=20, pady=10)
-        
-        rateAdaptLabel = ttk.Label(self.tab4, text="Rate Adaptivity:").grid(column=1, row=9, padx=20, pady=10, sticky="e")
-        rateAdaptValue = ttk.Label(self.tab4, text="On" if self.rateAdapt.get()==1 else "Off").grid(column=2, row=9, padx=20, pady=10)
+        pvarpLabel = ttk.Label(self.tab3, text="PVARP:").grid(column=1, row=7, padx=20, pady=10, sticky="e")
+        pvarpValue = ttk.Label(self.tab3, text=self.pvarp.get()).grid(column=2, row=7, padx=20, pady=10)
+        pvarpUnit = ttk.Label(self.tab3, text="ms").grid(column=3, row=7, padx=20, pady=10, sticky="w")
 
-        msrLabel = ttk.Label(self.tab4, text="Max. Sensor Rate:").grid(column=1, row=10, padx=20, pady=10, sticky="e")
-        msrValue = ttk.Label(self.tab4, text=self.msr.get()).grid(column=2, row=10, padx=20, pady=10)
-        msrUnit = ttk.Label(self.tab4, text="ppm").grid(column=3, row=10, padx=20, pady=10, sticky="w")
+        msrLabel = ttk.Label(self.tab4, text="Max. Sensor Rate:").grid(column=1, row=8, padx=20, pady=10, sticky="e")
+        msrValue = ttk.Label(self.tab4, text=self.msr.get()).grid(column=2, row=8, padx=20, pady=10)
+        msrUnit = ttk.Label(self.tab4, text="ppm").grid(column=3, row=8, padx=20, pady=10, sticky="w")
 
-        actThresLabel = ttk.Label(self.tab4, text="Activity Threshold:").grid(column=1, row=11, padx=20, pady=10, sticky="e")
-        actThresValue = ttk.Label(self.tab4, text=self.actThresTextValues[self.actThres.get()]).grid(column=2, row=11, padx=20, pady=10)
+        actThresLabel = ttk.Label(self.tab4, text="Activity Threshold:").grid(column=1, row=9, padx=20, pady=10, sticky="e")
+        actThresValue = ttk.Label(self.tab4, text=self.actThresTextValues[self.actThres.get()]).grid(column=2, row=9, padx=20, pady=10)
 
-        reactTimeLabel = ttk.Label(self.tab4, text="Reaction Time:").grid(column=1, row=12, padx=20, pady=10, sticky="e")
-        reactTimeValue = ttk.Label(self.tab4, text=self.reactTime.get()).grid(column=2, row=12, padx=20, pady=10)
-        reactTimeUnit = ttk.Label(self.tab4, text="sec").grid(column=3, row=12, padx=20, pady=10, sticky="w")
+        reactTimeLabel = ttk.Label(self.tab4, text="Reaction Time:").grid(column=1, row=10, padx=20, pady=10, sticky="e")
+        reactTimeValue = ttk.Label(self.tab4, text=self.reactTime.get()).grid(column=2, row=10, padx=20, pady=10)
+        reactTimeUnit = ttk.Label(self.tab4, text="sec").grid(column=3, row=10, padx=20, pady=10, sticky="w")
 
-        resFactorLabel = ttk.Label(self.tab4, text="Response Factor:").grid(column=1, row=13, padx=20, pady=10, sticky="e")
-        resFactorValue = ttk.Label(self.tab4, text=self.resFactor.get()).grid(column=2, row=13, padx=20, pady=10)
+        resFactorLabel = ttk.Label(self.tab4, text="Response Factor:").grid(column=1, row=11, padx=20, pady=10, sticky="e")
+        resFactorValue = ttk.Label(self.tab4, text=self.resFactor.get()).grid(column=2, row=11, padx=20, pady=10)
 
-        recTimeLabel = ttk.Label(self.tab4, text="Recovery Time:").grid(column=1, row=14, padx=20, pady=10, sticky="e")
-        recTimeValue = ttk.Label(self.tab4, text=self.recTime.get()).grid(column=2, row=14, padx=20, pady=10)
-        recTimeUnit = ttk.Label(self.tab4, text="min").grid(column=3, row=14, padx=20, pady=10, sticky="w")
+        recTimeLabel = ttk.Label(self.tab4, text="Recovery Time:").grid(column=1, row=12, padx=20, pady=10, sticky="e")
+        recTimeValue = ttk.Label(self.tab4, text=self.recTime.get()).grid(column=2, row=12, padx=20, pady=10)
+        recTimeUnit = ttk.Label(self.tab4, text="min").grid(column=3, row=12, padx=20, pady=10, sticky="w")
 
     def __vviInterfaceConfig(self):
         # Config menu to edit parameters for the VVI Pacemaker mode
@@ -681,7 +660,7 @@ class Mode:
         self.ventriPulseInput4.grid(column=2, row=4, padx=20, pady=10)
         self.ventriPulseInput4.config(validate="key", validatecommand=(reg, "%P"))
 
-        self.ventriSensInput4 = ttk.Entry(self.tab4, textvariable=self.ventriSens, justify=CENTER)
+        self.ventriSensInput4 = ttk.Entry(self.tab4, textvariable=self.ventriThres, justify=CENTER)
         self.ventriSensInput4.grid(column=2, row=5, padx=20, pady=10)
         self.ventriSensInput4.config(validate="key", validatecommand=(reg, "%P"))
 
@@ -689,37 +668,32 @@ class Mode:
         self.vrpInput4.grid(column=2, row=6, padx=20, pady=10)
         self.vrpInput4.config(validate="key", validatecommand=(reg, "%P"))
 
-        self.hysteresisInput4 = ttk.Checkbutton(self.tab4, var=self.hysteresis, onvalue="On", offvalue="Off")
-        self.hysteresisInput4.grid(column=2, row=7, padx=20, pady=10)
-
-        self.rateSmoothInput4 = ttk.Checkbutton(self.tab4, var=self.rateSmoothing, onvalue="On", offvalue="Off")
-        self.rateSmoothInput4.grid(column=2, row=8, padx=20, pady=10)
-
-        self.rateAdaptInput4 = ttk.Checkbutton(self.tab4, var=self.rateAdapt, onvalue=1, offvalue=0)
-        self.rateAdaptInput4.grid(column=2, row=9, padx=20, pady=10)
+        self.pvarpInput4 = ttk.Entry(self.tab3, textvariable=self.pvarp, justify=CENTER)
+        self.pvarpInput4.grid(column=2, row=7, padx=20, pady=20)
+        self.pvarpInput4.config(validate="key", validatecommand=(reg, "%P"))
 
         self.msrInput4 = ttk.Entry(self.tab4, textvariable=self.msr, justify=CENTER)
-        self.msrInput4.grid(column=2, row=10, padx=20, pady=10)
+        self.msrInput4.grid(column=2, row=8, padx=20, pady=10)
         self.msrInput4.config(validate="key", validatecommand=(reg, "%P"))
         
         self.actThresInput4 = ttk.Combobox(self.tab4, values=list(self.actThresTextValues.values()))
-        self.actThresInput4.grid(column=2, row=11, padx=20, pady=10)
+        self.actThresInput4.grid(column=2, row=9, padx=20, pady=10)
         self.actThresInput4.set(self.actThresTextValues[self.actThres.get()])
 
         self.reactTimeInput4 = ttk.Combobox(self.tab4, values=[10,20,30,40,50])
-        self.reactTimeInput4.grid(column=2, row=12, padx=20, pady=10)
+        self.reactTimeInput4.grid(column=2, row=10, padx=20, pady=10)
         self.reactTimeInput4.set(self.reactTime.get())
 
         self.resFactorInput4 = ttk.Combobox(self.tab4, values=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        self.resFactorInput4.grid(column=2, row=13, padx=20, pady=10)
+        self.resFactorInput4.grid(column=2, row=11, padx=20, pady=10)
         self.resFactorInput4.set(self.resFactor.get())
 
         self.recTimeInput4 = ttk.Combobox(self.tab4, values=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        self.recTimeInput4.grid(column=2, row=14, padx=20, pady=10)
+        self.recTimeInput4.grid(column=2, row=12, padx=20, pady=10)
         self.recTimeInput4.set(self.recTime.get())
 
         self.confirmButton4 = tk.Button(self.tab4, text="Confirm Changes", bg="white", command=self.__vviConfigConfirm)
-        self.confirmButton4.grid(column=5, row=14, sticky="w", padx=5, pady=5)
+        self.confirmButton4.grid(column=5, row=13, sticky="w", padx=5, pady=5)
 
     def __vviConfigConfirm(self):
         # VVI config confirm button -> Enforces value limits, cleans up ui to prevent memory leaking, and updates values
@@ -741,7 +715,7 @@ class Mode:
         if (self.vrp.get() < 150) or (self.vrp.get() > 500):
             invalid = True
             messagebox.showerror("Value Error", "VRP must be between 150 and 500")
-        if (self.ventriSens.get() < 0) or (self.ventriSens.get() > 5.0):
+        if (self.ventriThres.get() < 0) or (self.ventriThres.get() > 5.0):
             invalid = True
             messagebox.showerror("Value Error", "Ventricular Sensitivity must be between 0 and 5.0")
         if (self.msr.get() < 50) or (self.msr.get() > 175):
@@ -763,175 +737,6 @@ class Mode:
             self.tab4.update()
             self.__updateValues()
             self.vviInterface()
-
-    def dooInterface(self):
-        # DOO Interface Initialization
-
-        try:
-            self.settingsButton5.destroy()
-        except AttributeError:
-            pass
-
-        self.tab5.grid_columnconfigure(4, weight=1)
-        self.tab5.grid_rowconfigure((0,1,2,3,4,5,6,7,8,9,10,11,12,13), weight=1)
-        self.settingsButton5 = tk.Button(self.tab5, text="Configure Settings", bg="white", command=self.__dooInterfaceConfig)
-        self.settingsButton5.grid(column=5, row=13, sticky="w", padx=5, pady=5)
-
-        lowerRateLabel = ttk.Label(self.tab5, text="Lower Rate Limit:").grid(column=1, row=1, padx=20, pady=10, sticky="e")
-        lowerRateValue = ttk.Label(self.tab5, text=self.lowerRateLimit.get()).grid(column=2, row=1, padx=20, pady=20)
-        lowerRateUnit = ttk.Label(self.tab5, text="ppm").grid(column=3, row=1, padx=20, pady=20, sticky="w")
-
-        upperRateLabel = ttk.Label(self.tab5, text="Upper Rate Limit:").grid(column=1, row=2, padx=20, pady=10, sticky="e")
-        upperRateValue = ttk.Label(self.tab5, text=self.upperRateLimit.get()).grid(column=2, row=2, padx=20, pady=20)
-        upperRateUnit = ttk.Label(self.tab5, text="ppm").grid(column=3, row=2, padx=20, pady=20, sticky="w")
-
-        avDelayLabel = ttk.Label(self.tab5, text="Fixed AV Delay:").grid(column=1, row=3, padx=20, pady=10, sticky="e")
-        avDelayValue = ttk.Label(self.tab5, text=self.avDelay.get()).grid(column=2, row=3, padx=20, pady=10)
-        avDelayUnit = ttk.Label(self.tab5, text="ms").grid(column=3, row=3, padx=20, pady=10, sticky="w")
-
-        atrialAmpLabel = ttk.Label(self.tab5, text="Atrial Amplitude:").grid(column=1, row=4, padx=20, pady=10, sticky="e")
-        atrialAmpValue = ttk.Label(self.tab5, text=self.atrialAmp.get()).grid(column=2, row=4, padx=20, pady=10)
-        atrialAmpUnit = ttk.Label(self.tab5, text="V").grid(column=3, row=4, padx=20, pady=10, sticky="w")
-        
-        ventriAmpLabel = ttk.Label(self.tab5, text="Ventri. Amplitude:").grid(column=1, row=5, padx=20, pady=10, sticky="e")
-        ventriAmpValue = ttk.Label(self.tab5, text=self.ventriAmp.get()).grid(column=2, row=5, padx=20, pady=10)
-        ventriAmpUnit = ttk.Label(self.tab5, text="V").grid(column=3, row=5, padx=20, pady=10, sticky="w")
-
-        atrialPulseLabel = ttk.Label(self.tab5, text="Atrial Pulse Width:").grid(column=1, row=6, padx=20, pady=10, sticky="e")
-        atrialPulseValue = ttk.Label(self.tab5, text=self.atrialPulseWidth.get()).grid(column=2, row=6, padx=20, pady=10)
-        atrialPulseUnit = ttk.Label(self.tab5, text="ms").grid(column=3, row=6, padx=20, pady=10, sticky="w")
-
-        ventriPulseLabel = ttk.Label(self.tab5, text="Ventri. Pulse Width:").grid(column=1, row=7, padx=20, pady=10, sticky="e")
-        ventriPulseValue = ttk.Label(self.tab5, text=self.ventriPulseWidth.get()).grid(column=2, row=7, padx=20, pady=10)
-        ventriPulseUnit = ttk.Label(self.tab5, text="ms").grid(column=3, row=7, padx=20, pady=10, sticky="w")
-
-        rateAdaptLabel = ttk.Label(self.tab5, text="Rate Adaptivity:").grid(column=1, row=8, padx=20, pady=10, sticky="e")
-        rateAdaptValue = ttk.Label(self.tab5, text="On" if self.rateAdapt.get()==1 else "Off").grid(column=2, row=8, padx=20, pady=10)
-
-        msrLabel = ttk.Label(self.tab5, text="Max. Sensor Rate:").grid(column=1, row=9, padx=20, pady=10, sticky="e")
-        msrValue = ttk.Label(self.tab5, text=self.msr.get()).grid(column=2, row=9, padx=20, pady=10)
-        msrUnit = ttk.Label(self.tab5, text="ppm").grid(column=3, row=9, padx=20, pady=10, sticky="w")
-
-        actThresLabel = ttk.Label(self.tab5, text="Activity Threshold:").grid(column=1, row=10, padx=20, pady=10, sticky="e")
-        actThresValue = ttk.Label(self.tab5, text=self.actThresTextValues[self.actThres.get()]).grid(column=2, row=10, padx=20, pady=10)
-
-        reactTimeLabel = ttk.Label(self.tab5, text="Reaction Time:").grid(column=1, row=11, padx=20, pady=10, sticky="e")
-        reactTimeValue = ttk.Label(self.tab5, text=self.reactTime.get()).grid(column=2, row=11, padx=20, pady=10)
-        reactTimeUnit = ttk.Label(self.tab5, text="sec").grid(column=3, row=11, padx=20, pady=10, sticky="w")
-
-        resFactorLabel = ttk.Label(self.tab5, text="Response Factor:").grid(column=1, row=12, padx=20, pady=10, sticky="e")
-        resFactorValue = ttk.Label(self.tab5, text=self.resFactor.get()).grid(column=2, row=12, padx=20, pady=10)
-
-        recTimeLabel = ttk.Label(self.tab5, text="Recovery Time:").grid(column=1, row=13, padx=20, pady=10, sticky="e")
-        recTimeValue = ttk.Label(self.tab5, text=self.recTime.get()).grid(column=2, row=13, padx=20, pady=10)
-        recTimeUnit = ttk.Label(self.tab5, text="min").grid(column=3, row=13, padx=20, pady=10, sticky="w")
-
-    def __dooInterfaceConfig(self):
-        # Config menu to edit parameters for DOO mode
-        
-        self.settingsButton5.destroy()
-        reg = self.tab5.register(self.validateInput)
-
-        self.lowerRateInput5 = ttk.Entry(self.tab5, textvariable=self.lowerRateLimit, justify=CENTER)
-        self.lowerRateInput5.grid(column=2, row=1, padx=20, pady=10)
-        self.lowerRateInput5.config(validate="key", validatecommand=(reg, "%P"))
-
-        self.upperRateInput5 = ttk.Entry(self.tab5, textvariable=self.upperRateLimit, justify=CENTER)
-        self.upperRateInput5.grid(column=2, row=2, padx=20, pady=10)
-        self.upperRateInput5.config(validate="key", validatecommand=(reg, "%P"))
-
-        self.avDelayInput5 = ttk.Entry(self.tab5, textvariable=self.avDelay, justify=CENTER)
-        self.avDelayInput5.grid(column=2, row=3, padx=20, pady=10)
-        self.avDelayInput5.config(validate="key", validatecommand=(reg, "%P"))
-
-        self.atrialAmpInput5 = ttk.Entry(self.tab5, textvariable=self.atrialAmp, justify=CENTER)
-        self.atrialAmpInput5.grid(column=2, row=4, padx=20, pady=10)
-        self.atrialAmpInput5.config(validate="key", validatecommand=(reg, "%P"))
-        
-        self.ventriAmpInput5 = ttk.Entry(self.tab5, textvariable=self.ventriAmp, justify=CENTER)
-        self.ventriAmpInput5.grid(column=2, row=5, padx=20, pady=10)
-        self.ventriAmpInput5.config(validate="key", validatecommand=(reg, "%P"))
-
-        self.atrialPulseInput5 = ttk.Entry(self.tab5, textvariable=self.atrialPulseWidth, justify=CENTER)
-        self.atrialPulseInput5.grid(column=2, row=6, padx=20, pady=10)
-        self.atrialPulseInput5.config(validate="key", validatecommand=(reg, "%P"))
-
-        self.ventriPulseInput5 = ttk.Entry(self.tab5, textvariable=self.ventriPulseWidth, justify=CENTER)
-        self.ventriPulseInput5.grid(column=2, row=7, padx=20, pady=10)
-        self.ventriPulseInput5.config(validate="key", validatecommand=(reg, "%P"))
-
-        self.rateAdaptInput5 = ttk.Checkbutton(self.tab5, var=self.rateAdapt, onvalue=1, offvalue=0)
-        self.rateAdaptInput5.grid(column=2, row=8, padx=20, pady=10)
-
-        self.msrInput5 = ttk.Entry(self.tab5, textvariable=self.msr, justify=CENTER)
-        self.msrInput5.grid(column=2, row=9, padx=20, pady=10)
-        self.msrInput5.config(validate="key", validatecommand=(reg, "%P"))
-        
-        self.actThresInput5 = ttk.Combobox(self.tab5, values=list(self.actThresTextValues.values()))
-        self.actThresInput5.grid(column=2, row=10, padx=20, pady=10)
-        self.actThresInput5.set(self.actThresTextValues[self.actThres.get()])
-
-        self.reactTimeInput5 = ttk.Combobox(self.tab5, values=[10,20,30,40,50])
-        self.reactTimeInput5.grid(column=2, row=11, padx=20, pady=10)
-        self.reactTimeInput5.set(self.reactTime.get())
-
-        self.resFactorInput5 = ttk.Combobox(self.tab5, values=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        self.resFactorInput5.grid(column=2, row=12, padx=20, pady=10)
-        self.resFactorInput5.set(self.resFactor.get())
-
-        self.recTimeInput5 = ttk.Combobox(self.tab5, values=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        self.recTimeInput5.grid(column=2, row=13, padx=20, pady=10)
-        self.recTimeInput5.set(self.recTime.get())
-
-        self.confirmButton5 = tk.Button(self.tab5, text="Confirm Changes", bg="white", command=self.__dooConfigConfirm)
-        self.confirmButton5.grid(column=5, row=13, sticky="w", padx=5, pady=5)
-    
-    def __dooConfigConfirm(self):
-        # DOO config confirm menu -> Enforces value limits, cleans up ui to prevent memory leaking, and updates values
-        
-        invalid = False
-
-        if (self.lowerRateLimit.get() < 30) or (self.lowerRateLimit.get() > 175):
-            invalid = True
-            messagebox.showerror("Value Error", "Lower Rate Limit must be between 30-175")
-        if (self.upperRateLimit.get() < 50) or (self.upperRateLimit.get() > 175):
-            invalid = True
-            messagebox.showerror("Value Error", "Upper Rate Limit must be between 50-175")
-        if (self.avDelay.get() < 70) or (self.avDelay.get() > 300):
-            invalid = True
-            messagebox.showerror("Value Error", "AV Delay must be between 70 and 300")
-        if (self.atrialAmp.get() < 0) or (self.atrialAmp.get() > 5.0):
-            invalid = True
-            messagebox.showerror("Value Error", "Atrial Amplitude must be between 0.1 and 5.0 or 0 for off")
-        if (self.ventriAmp.get() < 0) or (self.ventriAmp.get() > 5.0):
-            invalid = True
-            messagebox.showerror("Value Error", "Ventricular Ampltiude must be between 0.1 and 5.0 or 0 for off")
-        if (self.atrialPulseWidth.get() < 1) or (self.atrialPulseWidth.get() > 30):
-            invalid = True
-            messagebox.showerror("Value Error", "Atrial Pulse Width must be between 1 and 30")
-        if (self.ventriPulseWidth.get() < 1) or (self.ventriPulseWidth.get() > 30):
-            invalid = True
-            messagebox.showerror("Value Error", "Ventricular Pulse Width must be between 1 and 30")
-        if (self.msr.get() < 50) or (self.msr.get() > 175):
-            invalid = True
-            messagebox.showerror("Value Error", "Maxmium Sensor Rate must be between 50-175")
-        
-        if invalid:
-            # Do nothing on invalid input to force user to correct error
-            pass
-        else:
-            try:
-                IntVar.set(self.actThres, list(self.actThresTextValues.keys())[self.actThresInput5.current()])
-                IntVar.set(self.reactTime, self.reactTimeInput5.get())
-                IntVar.set(self.resFactor, self.resFactorInput5.get())
-                IntVar.set(self.recTime, self.recTimeInput5.get())
-                for widget in self.tab5.winfo_children():
-                    widget.destroy()
-            except (TclError, AttributeError):
-                pass
-            self.tab5.update()
-            self.__updateValues()
-            self.dooInterface()
 
     def commSettings(self):
         # Serial Communications Menu initialization
@@ -971,7 +776,6 @@ class Mode:
             pass
     
     def __commDC(self):
-        # Method to be binded to a button
         # Disconnects the DCM from the pacemaker board
 
         ser.serClose()
@@ -1043,12 +847,12 @@ class Mode:
         IntVar.set(self.arp, arp)
 
         # Rounding for Atrial Sensitivity value
-        aSens = self.atrialSens.get()
-        DoubleVar.set(self.atrialSens, round(aSens, 1))
+        aSens = self.atrialThres.get()
+        DoubleVar.set(self.atrialThres, round(aSens, 1))
 
         # Rounding for Ventricular Sensitivity value
-        vSens = self.ventriSens.get()
-        DoubleVar.set(self.ventriSens, round(vSens, 1))
+        vSens = self.ventriThres.get()
+        DoubleVar.set(self.ventriThres, round(vSens, 1))
 
         # Rounding for the Maximum Sensor Rate value
         msr = self.msr.get()
@@ -1061,10 +865,10 @@ class Mode:
         IntVar.set(self.avDelay, avDelay)
 
         # [Mode, LRL, URL, A.amp, A.pw, V.amp, V.pw, VRP, ARP, aSens, vSens, rateAdapt, MSR, actThres, reactTime, resFactor, recTime]
-        self.inputValues = [self.tabControl.index("current"), self.lowerRateLimit.get(), self.upperRateLimit.get(), self.atrialAmp.get(), self.atrialPulseWidth.get(), 
-                            self.ventriAmp.get(), self.ventriPulseWidth.get(), self.vrp.get(), self.arp.get(), self.atrialSens.get(), self.ventriSens.get(), 
-                            self.rateAdapt.get(), self.msr.get(), self.actThres.get(), self.reactTime.get(), self.resFactor.get(), self.recTime.get(), self.avDelay.get()]
-        
+        self.inputValues = [self.tabControl.index("current"), self.lowerRateLimit.get(), self.upperRateLimit.get(), self.pvarp.get(), 
+                            self.avDelay.get(), self.reactTime.get(), self.resFactor.get(), self.actThres.get(), self.recTime.get(), self.msr.get(), 
+                            self.atrialAmp.get(), self.atrialPulseWidth.get(), self.arp.get(), self.atrialThres.get(), 
+                            self.ventriAmp.get(), self.ventriPulseWidth.get(), self.vrp.get(),  self.ventriThres.get()]
         db.updateParams(tuple(self.inputValues)) # Update values to the database for the current user
 
         if ser.serState()[0]:

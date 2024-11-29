@@ -38,92 +38,95 @@ class COM:
         mode = paramList[0]
         LRL = paramList[1]
         URL = paramList[2]
-        A_Amp = paramList[3]
-        A_pw = paramList[4]
-        V_Amp = paramList[5]
-        V_pw = paramList[6]
-        VRP = paramList[7]
-        ARP = paramList[8]
-        aSens = paramList[9]
-        vSens = paramList[10]
-        rateAdapt = paramList[11]
-        MSR = paramList[12]
-        actThresh = paramList[13]
-        reactTime = paramList[14]
-        resFactor = paramList[15]
-        recTime = paramList[16]
-        AVdelay = paramList[17]
+        PVARP = paramList[3]
+        AVdelay = paramList[4]
+        reactTime = paramList[5]
+        resFactor = paramList[6]
+        actThresh = paramList[7]
+        recTime = paramList[8]
+        MSR = paramList[9]
+        A_Amp = paramList[10]
+        A_pw = paramList[11]
+        ARP = paramList[12]
+        aThres = paramList[13]
+        V_Amp = paramList[14]
+        V_pw = paramList[15]
+        VRP = paramList[16]
+        vThres = paramList[17]
+        
 
-        mode_b = struct.pack("b", mode)
-        LRL_b = struct.pack("B", LRL)
-        URL_b = struct.pack("B", URL)
-        A_Amp_b = struct.pack("f", A_Amp)
-        A_pw_b=struct.pack("B", A_pw)
-        V_Amp_b=struct.pack("f", V_Amp)
-        V_pw_b=struct.pack("B", V_pw)
-        ARP_b=struct.pack("H", ARP)
-        VRP_b=struct.pack("H", VRP)
-        aSens_b = struct.pack("f", aSens)
-        vSens_b = struct.pack("f", vSens)
-        AVdelay_b = struct.pack("H", AVdelay)
-        rateAdapt_b = struct.pack("B", rateAdapt)
-        MSR_b = struct.pack("B", MSR)
-        actThresh_b = struct.pack("f", actThresh)
-        reactTime_b = struct.pack("d", reactTime)
-        resFactor_b = struct.pack("B", resFactor)
-        recTime_b = struct.pack("d", recTime)
+        #binary values of parameters
+        mode_b        = struct.pack("H", mode)
+        LRL_b         = struct.pack("H", LRL)
+        URL_b         = struct.pack("H", URL)
+        PVARP_b       = struct.pack("H", PVARP)
+        AVdelay_b     = struct.pack("H", AVdelay)
+        reactTime_b   = struct.pack("H", MSR)
+        resFactor_b   = struct.pack("H", A_Amp)
+        actThresh_b   = struct.pack("f", A_pw)
+        recTime_b     = struct.pack("H", V_Amp)
+        MSR_b         = struct.pack("H", V_pw)
+        A_Amp_b       = struct.pack("f", VRP)
+        A_pw_b        = struct.pack("f", ARP)
+        ARP_b         = struct.pack("H", aThres)
+        aThres_b      = struct.pack("f", vThres)
+        V_Amp_b       = struct.pack("f", reactTime)
+        V_pw_b        = struct.pack("f", actThresh)
+        VRP_b         = struct.pack("H", resFactor)
+        vThres_b      = struct.pack("f", recTime)
 
-        data = b"\x16\x55" + LRL_b + URL_b + A_Amp_b + A_pw_b + V_Amp_b + V_pw_b + ARP_b + VRP_b + aSens_b + vSens_b + mode_b + AVdelay_b + actThresh_b + reactTime_b + recTime_b + MSR_b + rateAdapt_b + resFactor_b
+        data = b"\x16\x55" + mode_b + LRL_b + URL_b + PVARP_b + AVdelay_b + reactTime_b + resFactor_b + actThresh_b + recTime_b  + MSR_b + A_Amp_b + A_pw_b + ARP_b + aThres_b + V_Amp_b + V_pw_b + VRP_b + vThres_b
         self.ser.write(data)
         sleep(0.25)
 
     def serRead(self):
 
-        self.ser.write(b"\x16\x22")
+        self.ser.write(b"\x16\x22" + b"\x00"*48)
         sleep(0.25)
-        data_r = self.ser.read(38) #read 38 bytes
+        data_r = self.ser.read(50) #read 50 bytes
 
-        mode = data_r[0]
+        mode = struct.unpack("H", data_r[0:2])[0]
         
-        LRL = data_r[1]
-        URL = data_r[2]
+        LRL = struct.unpack("H", data_r[2:4])[0]
+        URL = struct.unpack("H", data_r[4:6])[0]
 
-        PVARP = struct.unpack("H", data_r[3:5])# 2 bytes
+        PVARP = struct.unpack("H", data_r[6:8])# 2 bytes
 
-        AVdelay = struct.unpack("H", data_r[5:7])[0] #2 bytes
+        AVdelay = struct.unpack("H", data_r[8:10])[0] #2 bytes
 
-        reactTime = data_r[7] #1 byte
-        resFactor = data_r[8] #1 byte
-        actThresh = struct.unpack("f", data_r[9:13])[0] #4 bytes
-        recTime = struct.unpack("H", data_r[13:15])[0]   #2 bytes
+        reactTime = struct.unpack("H", data_r[10:12])[0]
+        resFactor = struct.unpack("H", data_r[12:14])[0]
+        actThresh = struct.unpack("f", data_r[14:18])[0] #4 bytes
+        recTime = struct.unpack("H", data_r[18:20])[0]   #2 bytes
 
-        MSR = data_r[15]
+        MSR = struct.unpack("H", data_r[20:22])[0]
 
-        A_Amp = struct.unpack("f", data_r[16:20])[0]  # 4 bytes
-        A_pw = data_r[20]                            # 4 bytes
-        V_Amp = struct.unpack("f", data_r[21:25])[0] # 4 bytes
-        V_pw = data_r[25]                           # 4 bytes
+        A_Amp = struct.unpack("f", data_r[22:26])[0]  # 4 bytes
+        A_pw = struct.unpack("H", data_r[26:30])[0] # 4 bytes
+        ARP = struct.unpack("H", data_r[38:40])[0] # 2 bytes
+        aThres = struct.unpack("f", data_r[42:46])[0] # 4 bytes
 
-        ARP = struct.unpack("H", data_r[26:28])[0] # 2 bytes
-        VRP = struct.unpack("H", data_r[28:30])[0] # 2 bytes
-
-        aThres = struct.unpack("f", data_r[30:34])[0] # 4 bytes
-        vThres = struct.unpack("f", data_r[34:38])[0] # 4 bytes
+        V_Amp = struct.unpack("f", data_r[30:34])[0] # 4 bytes
+        V_pw = struct.unpack("H", data_r[34:38])[0] # 4 bytes
+        VRP = struct.unpack("H", data_r[40:42])[0] # 2 bytes
+        vThres = struct.unpack("f", data_r[46:50])[0] # 4 bytes
         
-        parameters = [mode, LRL, URL, A_Amp, A_pw, V_Amp, V_pw, VRP, ARP, aThres, vThres, PVARP, MSR, actThresh, reactTime, resFactor, recTime, AVdelay]
+        parameters = [mode, LRL, URL, PVARP, AVdelay, reactTime, resFactor, actThresh, recTime, MSR, A_Amp, A_pw, ARP, aThres, V_Amp, V_pw, VRP, vThres]
 
+        sleep(0.25)
+        self.ser.write(b"\x16\x44") #stop pacemaker signal
         return parameters
 
     def startEgram(self):
-        self.ser.write(b"\x16\63") # edit
+        self.ser.write(b"\x16\x22" + b"\x00"*48)
         sleep(0.25) 
 
         data_r = self.ser.read(50)
 
-        aSignal = struct.unpack("d", data_r[0:8])[0] * 3.3
-        vSignal = struct.unpack("d", data_r[8:16])[0] * 3.3
+        aSignal = struct.unpack("f", data_r[22:26])[0] * 3.3
+        vSignal = struct.unpack("f", data_r[30:34])[0] * 3.3
         return aSignal, vSignal
 
     def stopEgram(self):
-        self.ser.write(b"\x16\x16")
+        self.ser.write(b"\x16\x44")
         sleep(0.25)

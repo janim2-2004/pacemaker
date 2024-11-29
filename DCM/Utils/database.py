@@ -32,21 +32,21 @@ class Database:
             mode DEFAULT 0,
             lrl DEFAULT 60,
             url DEFAULT 120,
-            a_amp DEFAULT 5.0,
-            a_pw DEFAULT 1,
-            v_amp DEFAULT 5.0,
-            v_pw DEFAULT 1,
-            vrp DEFAULT 320,
-            arp DEFAULT 250,
-            aSens DEFAULT 0.0,
-            vSens DEFAULT 0.0,
-            rateAdapt DEFAULT 0,
-            msr DEFAULT 120,
-            actThres DEFAULT 2,
-            reactTime DEFAULT 30,
+            pvarp DEFAULT 250, 
+            avDelay DEFAULT 150,
+            reactTime DEFAULT 10,
             resFactor DEFAULT 8,
-            recTime DEFAULT 5,
-            avDelay DEFAULT 150
+            actThres DEFAULT 0.2,
+            recTime DEFAULT 20,
+            msr DEFAULT 175,
+            a_amp DEFAULT 5.0,
+            a_pw DEFAULT 10,
+            arp DEFAULT 200,
+            aThres DEFAULT 2.0,
+            v_amp DEFAULT 5.0,
+            v_pw DEFAULT 10,
+            vrp DEFAULT 200,
+            vThres DEFAULT 1.6
             );
             """
         self.curr.execute(create_paramtable)
@@ -104,28 +104,28 @@ class Database:
         self.curr.execute(search_params, (self.rowid[0][0],))
         params = self.curr.fetchall()
         return params
-
+    
     def updateParams(self, parameters):
         newTup = parameters + (self.rowid[0][0],)
         updateComm = """UPDATE params
-            SET mode = ?,
-                lrl = ?,
-                url = ?,
+            SET mode  = ?,
+                lrl  = ?,
+                url  = ?,
+                pvarp  = ?,
+                avDelay  = ?,
+                reactTime  = ?,
+                resFactor  = ?,
+                actThres   = ?,
+                recTime = ?,
+                msr = ?,
                 a_amp = ?,
                 a_pw = ?,
+                arp = ?,
+                aThres = ?,
                 v_amp = ?,
                 v_pw = ?,
                 vrp = ?,
-                arp = ?,
-                aSens = ?,
-                vSens = ?,
-                rateAdapt = ?,
-                msr = ?,
-                actThres = ?,
-                reactTime = ?,
-                resFactor = ?,
-                recTime = ?,
-                avDelay = ?
+                vThres = ?
             WHERE id = ?
         ;
         """
