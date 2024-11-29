@@ -61,19 +61,21 @@ class COM:
         URL_b         = struct.pack("H", URL)
         PVARP_b       = struct.pack("H", PVARP)
         AVdelay_b     = struct.pack("H", AVdelay)
-        reactTime_b   = struct.pack("H", MSR)
-        resFactor_b   = struct.pack("H", A_Amp)
-        actThresh_b   = struct.pack("f", A_pw)
-        recTime_b     = struct.pack("H", V_Amp)
-        MSR_b         = struct.pack("H", V_pw)
-        A_Amp_b       = struct.pack("f", VRP)
-        A_pw_b        = struct.pack("f", ARP)
-        ARP_b         = struct.pack("H", aThres)
-        aThres_b      = struct.pack("f", vThres)
-        V_Amp_b       = struct.pack("f", reactTime)
-        V_pw_b        = struct.pack("f", actThresh)
-        VRP_b         = struct.pack("H", resFactor)
-        vThres_b      = struct.pack("f", recTime)
+        reactTime_b   = struct.pack("H", reactTime)
+        resFactor_b   = struct.pack("H", resFactor)
+        actThresh_b   = struct.pack("f", actThresh)
+        recTime_b     = struct.pack("H", recTime)
+        MSR_b         = struct.pack("H", MSR)
+        A_Amp_b       = struct.pack("f", A_Amp)
+        A_pw_b        = struct.pack("f", A_pw)
+        ARP_b         = struct.pack("H", ARP)
+        aThres_b      = struct.pack("f", aThres)
+        V_Amp_b       = struct.pack("f", V_Amp)
+        V_pw_b        = struct.pack("f", V_pw)
+        VRP_b         = struct.pack("H", VRP)
+        vThres_b      = struct.pack("f", vThres)
+
+        print(data)
 
         data = b"\x16\x55" + mode_b + LRL_b + URL_b + PVARP_b + AVdelay_b + reactTime_b + resFactor_b + actThresh_b + recTime_b  + MSR_b + A_Amp_b + A_pw_b + ARP_b + aThres_b + V_Amp_b + V_pw_b + VRP_b + vThres_b
         self.ser.write(data)
@@ -81,10 +83,10 @@ class COM:
 
     def serRead(self):
 
-        self.ser.write(b"\x16\x22" + b"\x00"*48)
+        self.ser.write(b"\x16\x22" + b"\x00"*50)
+        data_r = self.ser.read(66) #read 50 bytes we can trow away last 16 bytes as they relate to egram
         sleep(0.25)
-        data_r = self.ser.read(50) #read 50 bytes
-
+        print(data_r)
         mode = struct.unpack("H", data_r[0:2])[0]
         
         LRL = struct.unpack("H", data_r[2:4])[0]
@@ -102,31 +104,31 @@ class COM:
         MSR = struct.unpack("H", data_r[20:22])[0]
 
         A_Amp = struct.unpack("f", data_r[22:26])[0]  # 4 bytes
-        A_pw = struct.unpack("H", data_r[26:30])[0] # 4 bytes
+        A_pw = struct.unpack("f", data_r[26:30])[0] # 4 bytes
         ARP = struct.unpack("H", data_r[38:40])[0] # 2 bytes
         aThres = struct.unpack("f", data_r[42:46])[0] # 4 bytes
 
         V_Amp = struct.unpack("f", data_r[30:34])[0] # 4 bytes
-        V_pw = struct.unpack("H", data_r[34:38])[0] # 4 bytes
+        V_pw = struct.unpack("f", data_r[34:38])[0] # 4 bytes
         VRP = struct.unpack("H", data_r[40:42])[0] # 2 bytes
         vThres = struct.unpack("f", data_r[46:50])[0] # 4 bytes
         
         parameters = [mode, LRL, URL, PVARP, AVdelay, reactTime, resFactor, actThresh, recTime, MSR, A_Amp, A_pw, ARP, aThres, V_Amp, V_pw, VRP, vThres]
-
-        sleep(0.25)
-        self.ser.write(b"\x16\x44") #stop pacemaker signal
+        print(parameters)
         return parameters
 
     def startEgram(self):
-        self.ser.write(b"\x16\x22" + b"\x00"*48)
+        self.ser.write(b"\x16\x44" + b"\x00"*50)
         sleep(0.25) 
 
-        data_r = self.ser.read(50)
+        data_r = self.ser.read(66)
 
-        aSignal = struct.unpack("f", data_r[22:26])[0] * 3.3
-        vSignal = struct.unpack("f", data_r[30:34])[0] * 3.3
+        aSignal = struct.unpack("d", data_r[50:58])[0] * 3.3
+        vSignal = struct.unpack("d", data_r[58:66])[0] * 3.3
+        print(aSignal, vSignal)
         return aSignal, vSignal
 
     def stopEgram(self):
-        self.ser.write(b"\x16\x44")
+        self.ser.write(b"\x33" + b"\x00"*50)
         sleep(0.25)
+        
